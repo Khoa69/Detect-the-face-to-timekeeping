@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include('../partials/head'); %>
+  </head>
+  <body>
+    <header><%- include('../partials/header'); %></header>
+    <% function convertMinutesToHours(minutes) { %> <% var hours =
+    Math.floor(minutes / 60); %> <% var remainingMinutes = minutes % 60; %> <%
+    return hours + " hr " + remainingMinutes + " min"; %> <% } %>
+    <main>
+      <div class="container">
+        <h2 style="padding-top: 60px"><%= user[0].name %></h2>
+        <!-- <p><%= user %></p> -->
+        <table class="table" id="detail-all">
+          <thead>
+            <tr>
+              <!-- <th scope="col">#</th> -->
+              <th scope="col">Date</th>
+              <th scope="col">Status</th>
+              <th scope="col">Time</th>
+              <th scope="col">Actions</th>
+            </tr>
+            <!-- <tr>
+              <td class="input-table">
+                <input type="text" placeholder="Type to Filter..." />
+              </td>
+              <td class="input-table">
+                <input type="text" placeholder="Type to Filter..." />
+              </td>
+              <td class="input-table">
+                <input type="text" placeholder="Type to Filter..." />
+              </td>
+              <td></td>
+            </tr> -->
+          </thead>
+
+          <tbody>
+            <% listHis.forEach(history => { %>
+            <tr>
+              <!-- <th scope="row">1</th> -->
+              <td><%= history.date %></td>
+              <td>
+                <% if (history.absen =='none') { %>
+                <span>Absence</span>
+                <% } else {%>
+                <span>Presence</span>
+                <% } %>
+              </td>
+              <td id="timeWorking">
+                <% if (history.time) { %>
+                <span><%= convertMinutesToHours(history.time) %></span>
+                <% } else {%>
+                <span>0 hr 0 min</span>
+                <% } %>
+              </td>
+              <td>
+                <div class="dropdown">
+                  <a
+                    class="btn"
+                    href="#"
+                    role="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      fill="currentColor"
+                      class="bi bi-three-dots"
+                      viewBox="0 0 16 16"
+                    >
+                      <path
+                        d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"
+                      />
+                    </svg>
+                  </a>
+
+                  <ul class="dropdown-menu">
+                    <!-- <li><a class="dropdown-item" onclick="edit_comment('<%= history._id %>')" >Edit</a></li> -->
+                    <li>
+                      <a
+                        href="/timeAnalysis/date/<%= history._id %>"
+                        class="dropdown-item"
+                        >detail</a
+                      >
+                    </li>
+                  </ul>
+                </div>
+              </td>
+            </tr>
+            <script>
+              // Call the function from helper.js
+              var minutes = 120;
+              var result = convertMinutesToHours(minutes);
+              document.getElementById("result").textContent = result;
+            </script>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </main>
+
+    <%- include('../partials/footer'); %>
+  </body>
+  <script>
+    $(document).ready(function () {
+      // Setup - add a text input to each footer cell
+      $("#detail-all thead .datatable-filter-line").each(function () {
+        $(this).html('<input type="text"/>');
+      });
+
+      // DataTable
+      var table = $("#detail-all").DataTable({
+        initComplete: function () {
+          // Apply the search
+          this.api()
+            .columns()
+            .every(function () {
+              var that = this;
+
+              $("input", this.header()).on("keyup change clear", function () {
+                if (that.search() !== this.value) {
+                  that.search(this.value).draw();
+                }
+              });
+            });
+        },
+      });
+    });
+  </script>
+</html>
